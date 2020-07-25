@@ -58,10 +58,11 @@ def get_neg(x):
 
 # Finally, copy in your previous functions and write code that opens the file project_twitter_data.csv which has the fake generated twitter data (the text of a tweet, the number of retweets of that tweet, and the number of replies to that tweet). Your task is to build a sentiment classifier, which will detect how positive or negative each tweet is. Copy the code from the code windows above, and put that in the top of this code window. Now, you will write code to create a csv file called resulting_data.csv, which contains the Number of Retweets, Number of Replies, Positive Score (which is how many happy words are in the tweet), Negative Score (which is how many angry words are in the tweet), and the Net Score (how positive or negative the text is overall) for each tweet. The file should have those headers in that order. Remember that there is another component to this project. You will upload the csv file to Excel or Google Sheets and produce a graph of the Net Score vs Number of Retweets. Check Coursera for that portion of the assignment, if you’re accessing this textbook from Coursera.
 
+
 def strip_punctuation(x):
     for w in punctuation_chars :
         x = str(x).replace('%s'%w,'')
-    return x 
+    return x  
 
 
 def get_neg(x):
@@ -81,7 +82,7 @@ def get_pos(x):
         s = pos.lower()
         if s in positive_words:
             p += 1
-    return p  
+    return p 
 
 
 punctuation_chars = ["'", '"', ",", ".", "!", ":", ";", '#', '@']
@@ -101,35 +102,34 @@ with open("negative_words.txt") as pos_f:
 
 dt = open("project_twitter_data.csv","r")
 data = dt.readlines()
-
-retweet = 0
-reply = 0
-ps = 0
-ns = 0
+rt=[]
+rp=[]
+ps=[]
+ns=[]
+net=[]
+nb = 0
 for d in data[1:]:
     spn = d.replace('\n','')
     sp = spn.split(',')
-    
-#---retweet---
-    retweet = retweet + int(sp[1])
-    
-#---reply---
-    reply = reply + int(sp[2])
-    
-#---positive score--- 
-    ps_sementara = get_pos(sp[0])
-    ps = ps + ps_sementara
-#---negative score--- 
-    ns_sementara = get_neg(sp[0])
-    ns = ns + ns_sementara   
+    #---positive words---#
+    ps.append(get_pos(sp[0]))
+    #---negative words---#
+    ns.append(get_neg(sp[0]))
+    #---net score---#
+    net.append(int(get_pos(sp[0]))-int(get_neg(sp[0])))
+    #---retweet---#
+    rt.append(sp[1])
+    #---replay---#    
+    rp.append(sp[2])
+    nb += 1
 
-#---negative score---
-nets= 0
-nets = ps - ns
+alldata =[]    
+for r in range(nb):
+    s = ('{},{},{},{},{}'.format(rt[r],rp[r],ps[r],ns[r],net[r]))
+    alldata.append(s)
+csvdata = open("resulting_data.csv","w") 
+csvdata.write("Number of Retweets, Number of Replies, Positive Score, Negative Score, Net Score\n") 
+for csv in alldata:
+    w = csvdata.write(csv + "\n")
+csvdata.close()
 
-print('number of retweet',retweet) 
-print('number of replay',reply)    
-print('negative score',ns)    
-print('positive score',ps)     
-print('net score',nets)
-csv_data = open('resulting_data.csv','w')
